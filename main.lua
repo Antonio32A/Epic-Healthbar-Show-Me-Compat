@@ -1,5 +1,4 @@
-local ATTACK_RANGE = 24
-local ATTACK_TAGS = { "attack" }
+local ATTACK_RANGE = 12
 local widget
 
 local ShowMeHandler = require("showme_handler")
@@ -24,8 +23,8 @@ local function CheckNearbyMobs()
         return
     end
 
-    local pos = ThePlayer:GetPosition()
-    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, ATTACK_TAGS)) do
+    local pos = TheCamera.targetpos
+    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, TUNING.EPICHEALTHBAR.TAG)) do
         if IsTargetingPlayer(inst) then
             ShowMeHandler.FetchHealth(inst)
         end
@@ -54,11 +53,23 @@ ShowMeHandler.ListenToHints(function(inst, raw)
     end
 
     local is_new = widget.targets[inst] == nil
+    local lost_health = false
+
+    if is_new then
+        lost_health = true
+    elseif health.value < inst.epichealth.currenthealth then
+        lost_health = true
+    end
+
     inst.epichealth = {
         currenthealth = health.value,
         maxhealth = health.max,
         invincible = false,
     }
+
+    if lost_health then
+        inst.epichealth.lastwasdamagedtime = GetTime()
+    end
 
     if is_new then
         widget.targets[inst] = true

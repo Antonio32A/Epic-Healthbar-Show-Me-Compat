@@ -1,7 +1,7 @@
 name = "Epic Healthbar Show Me Compat"
 author = "Antonio32A"
 description = "Allows Epic Healthbar to work on servers with Show Me mod."
-version = "1.0.0"
+version = "1.1.0"
 api_version = 10
 priority = 2 ^ 1022 -- We want to load after Epic Healthbar if it's loaded on the server.
 
