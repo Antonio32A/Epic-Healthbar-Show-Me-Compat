@@ -53,23 +53,15 @@ ShowMeHandler.ListenToHints(function(inst, raw)
     end
 
     local is_new = widget.targets[inst] == nil
-    local lost_health = false
 
-    if is_new then
-        lost_health = true
-    elseif health.value < inst.epichealth.currenthealth then
-        lost_health = true
-    end
-
-    inst.epichealth = {
-        currenthealth = health.value,
-        maxhealth = health.max,
-        invincible = false,
-    }
-
-    if lost_health then
+    if inst.epichealth == nil then
+        inst.epichealth = { invincible = false }
+    elseif inst.epichealth.currenthealth > health.value then
         inst.epichealth.lastwasdamagedtime = GetTime()
     end
+
+    inst.epichealth.currenthealth = health.value
+    inst.epichealth.maxhealth = health.max
 
     if is_new then
         widget.targets[inst] = true
