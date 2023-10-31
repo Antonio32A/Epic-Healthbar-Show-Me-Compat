@@ -12,7 +12,7 @@ AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
 end)
 
 local function IsInCombat(inst)
-    return inst ~= ThePlayer and inst.replica.combat ~= nil and inst.replica.combat:GetTarget() ~= nil
+    return not inst:HasTag("player") and inst.replica.combat ~= nil and inst.replica.combat:GetTarget() ~= nil
 end
 
 local function CheckNearbyMobs()
