@@ -24,7 +24,7 @@ local function CheckNearbyMobs()
     end
 
     local pos = TheCamera.targetpos
-    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, TUNING.EPICHEALTHBAR.TAG)) do
+    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, { TUNING.EPICHEALTHBAR.TAG })) do
         if IsTargetingPlayer(inst) then
             ShowMeHandler.FetchHealth(inst)
         end
