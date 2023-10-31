@@ -11,11 +11,8 @@ AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
     widget = self
 end)
 
-local function IsTargetingPlayer(inst)
-    if ThePlayer == nil then
-        return false
-    end
-    return inst.replica.combat ~= nil and inst.replica.combat:GetTarget() == ThePlayer
+local function IsInCombat(inst)
+    return inst ~= ThePlayer and inst.replica.combat ~= nil and inst.replica.combat:GetTarget() ~= nil
 end
 
 local function CheckNearbyMobs()
@@ -25,7 +22,7 @@ local function CheckNearbyMobs()
 
     local pos = TheCamera.targetpos
     for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, { TUNING.EPICHEALTHBAR.TAG })) do
-        if IsTargetingPlayer(inst) then
+        if IsInCombat(inst) then
             ShowMeHandler.FetchHealth(inst)
         end
     end
@@ -43,7 +40,7 @@ local function RemoveTarget(inst)
 end
 
 ShowMeHandler.ListenToHints(function(inst, raw)
-    if widget == nil or widget.targets == nil or not IsTargetingPlayer(inst) then
+    if widget == nil or widget.targets == nil or not IsInCombat(inst) then
         return
     end
 
