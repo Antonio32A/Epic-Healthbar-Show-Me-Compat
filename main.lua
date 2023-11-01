@@ -8,17 +8,6 @@ local AttackHandler = require("attack_handler")
 -- in this case AddPrefabPostInit, so we have to use this workaround.
 AddPrefabPostInit("player_classified", ShowMeHandler.PlayerClassifiedListener)
 
-AddSimPostInit(function()
-    TUNING.EPICHEALTHBAR.GLOBAL_NUMBERS = false
-
-    AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
-        widget = self
-        self.inst:ListenForEvent("onremove", function()
-            widget = nil
-        end)
-    end)
-end)
-
 local function IsValidTarget(inst)
     return not inst:HasOneOfTags(IGNORE_TAGS)
         and inst:HasTag(TUNING.EPICHEALTHBAR.TAG)
@@ -49,6 +38,26 @@ local function RemoveTarget(inst)
         ThePlayer:PushEvent("lostepictarget", inst)
     end
 end
+
+local function OnWidgetUpdate(inst)
+    if inst.widget.target ~= nil then
+        ShowMeHandler.FetchHealth(inst.widget.target)
+    else
+        CheckNearbyMobs()
+    end
+end
+
+AddSimPostInit(function()
+    TUNING.EPICHEALTHBAR.GLOBAL_NUMBERS = false
+
+    AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
+        widget = self
+        self.inst:DoPeriodicTask(0.25, OnWidgetUpdate)
+        self.inst:ListenForEvent("onremove", function()
+            widget = nil
+        end)
+    end)
+end)
 
 ShowMeHandler.ListenToHints(function(inst, raw)
     if widget == nil or widget.targets == nil or not IsValidTarget(inst) then
@@ -84,16 +93,4 @@ AttackHandler.ListenToAttacked(function(inst)
     end
 
     ShowMeHandler.FetchHealth(inst)
-end)
-
-staticScheduler:ExecutePeriodic(0.25, function()
-    if widget == nil then
-        return
-    end
-
-    if widget.target ~= nil then
-        ShowMeHandler.FetchHealth(widget.target)
-    else
-        CheckNearbyMobs()
-    end
 end)
