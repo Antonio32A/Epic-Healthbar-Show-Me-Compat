@@ -79,7 +79,7 @@ ShowMeHandler.ListenToHints(function(inst, raw)
 end)
 
 AttackHandler.ListenToAttacked(function(inst)
-    if widget == nil then
+    if widget == nil or not IsValidTarget(inst) then
         return
     end
 
