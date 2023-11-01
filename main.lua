@@ -8,10 +8,14 @@ local AttackHandler = require("attack_handler")
 -- in this case AddPrefabPostInit, so we have to use this workaround.
 AddPrefabPostInit("player_classified", ShowMeHandler.PlayerClassifiedListener)
 
-AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
-    widget = self
-    self.inst:ListenForEvent("onremove", function()
-        widget = nil
+AddSimPostInit(function()
+    TUNING.EPICHEALTHBAR.GLOBAL_NUMBERS = false
+
+    AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
+        widget = self
+        self.inst:ListenForEvent("onremove", function()
+            widget = nil
+        end)
     end)
 end)
 
