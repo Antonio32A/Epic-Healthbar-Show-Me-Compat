@@ -10,6 +10,9 @@ AddPrefabPostInit("player_classified", ShowMeHandler.PlayerClassifiedListener)
 
 AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
     widget = self
+    self.inst:ListenForEvent("onremove", function()
+        widget = nil
+    end)
 end)
 
 local function IsValidTarget(inst)
