@@ -1,4 +1,5 @@
 local ATTACK_RANGE = 12
+local IGNORE_TAGS = { "player" }
 local widget
 
 local ShowMeHandler = require("showme_handler")
@@ -11,8 +12,11 @@ AddClassPostConstruct("widgets/epichealthbar", function(self, owner)
     widget = self
 end)
 
-local function IsInCombat(inst)
-    return not inst:HasTag("player") and inst.replica.combat ~= nil and inst.replica.combat:GetTarget() ~= nil
+local function IsValidTarget(inst)
+    return not inst:HasOneOfTags(IGNORE_TAGS)
+        and inst:HasTag(TUNING.EPICHEALTHBAR.TAG)
+        and inst.replica.combat ~= nil
+        and inst.replica.combat:GetTarget() ~= nil -- in combat
 end
 
 local function CheckNearbyMobs()
@@ -21,8 +25,8 @@ local function CheckNearbyMobs()
     end
 
     local pos = TheCamera.targetpos
-    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, { TUNING.EPICHEALTHBAR.TAG })) do
-        if IsInCombat(inst) then
+    for i, inst in ipairs(TheSim:FindEntities(pos.x, 0, pos.z, ATTACK_RANGE, { TUNING.EPICHEALTHBAR.TAG }, IGNORE_TAGS)) do
+        if IsValidTarget(inst) then
             ShowMeHandler.FetchHealth(inst)
         end
     end
@@ -40,7 +44,7 @@ local function RemoveTarget(inst)
 end
 
 ShowMeHandler.ListenToHints(function(inst, raw)
-    if widget == nil or widget.targets == nil or not IsInCombat(inst) then
+    if widget == nil or widget.targets == nil or not IsValidTarget(inst) then
         return
     end
 
